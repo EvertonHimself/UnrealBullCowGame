@@ -1,14 +1,48 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "BullCowCartridge.h"
+//#include "HiddenWordList.h";
 
 void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
     
+    const FString WordListPath = FPaths::ProjectContentDir() / TEXT("WordLists/HiddenWordList.txt");
+    FFileHelper::LoadFileToStringArray(Words, *WordListPath);
+    PrintLine(TEXT("The number of possible words is %i"), Words.Num());
+    //PrintLine(TEXT("The first 5 valid words are:"));
+    GetValidWords(Words);
+
+    PrintLine(TEXT("The number of valid words is: %i"), GetValidWords(Words).Num());
+
     SetupGame();
 
     // I've forgot why we have to use the *HiddenWord...
     PrintLine(TEXT("The HiddenWord is: %s.\nIt is %i characters long"), *HiddenWord, HiddenWord.Len()); // Debug line.
+}
+
+TArray <FString> UBullCowCartridge::GetValidWords(TArray <FString> WordsList) const
+{
+    TArray<FString> ValidWords;
+
+    // Former "for" parameters: int32 i = 0; i < WordsList.Num(); i++.
+    for (FString Word : WordsList)
+    {
+        if (Word.Len() >= 4 && Word.Len() <= 8 && IsIsogram(Word))
+        {
+            ValidWords.Emplace(Word);
+        
+            // I don't know WHY it only works with the "*"" operator (*Words).
+            // The * is called "dereference", and i have no idea why and what it is for.
+            //PrintLine(TEXT("%s"), *Words[i]);
+        }
+    }
+
+    // for (int32 i = 0; i < ValidWords.Num(); i++)
+    // {
+    //     PrintLine(TEXT("%s."), *ValidWords[i]);
+    // }
+
+    return ValidWords;
 }
 
 // What's the difference between & and *?
