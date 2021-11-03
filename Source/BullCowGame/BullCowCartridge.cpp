@@ -6,21 +6,21 @@ void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
     
+    PrintLine(TEXT("%i"), FMath::RandRange(0, 10));
+
     const FString WordListPath = FPaths::ProjectContentDir() / TEXT("WordLists/HiddenWordList.txt");
     FFileHelper::LoadFileToStringArray(Words, *WordListPath);
-    PrintLine(TEXT("The number of possible words is %i"), Words.Num());
-    //PrintLine(TEXT("The first 5 valid words are:"));
+    // PrintLine(TEXT("The number of possible words is %i"), Words.Num());
+    // PrintLine(TEXT("The first 5 valid words are:"));
     GetValidWords(Words);
 
-    PrintLine(TEXT("The number of valid words is: %i"), GetValidWords(Words).Num());
-
+    // PrintLine(TEXT("The number of valid words is: %i"), GetValidWords(Words).Num());
+    // PrintLine(TEXT("ValidWord - 1 is = %i"), GetValidWords(Words).Num() - 1);
     SetupGame();
 
-    // I've forgot why we have to use the *HiddenWord...
-    PrintLine(TEXT("The HiddenWord is: %s.\nIt is %i characters long"), *HiddenWord, HiddenWord.Len()); // Debug line.
 }
 
-TArray <FString> UBullCowCartridge::GetValidWords(TArray <FString> WordsList) const
+TArray <FString> UBullCowCartridge::GetValidWords(const TArray<FString>& WordsList) const
 {
     TArray<FString> ValidWords;
 
@@ -45,8 +45,8 @@ TArray <FString> UBullCowCartridge::GetValidWords(TArray <FString> WordsList) co
     return ValidWords;
 }
 
-// What's the difference between & and *?
-void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
+// What's the difference between & and *? (Kinda answered on 77. Introduction To References)
+void UBullCowCartridge::OnInput(const FString& PlayerInput) // When the player hits enter
 {
     if (bGameOver == true)
     {
@@ -56,7 +56,7 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
     }
     else
     {
-        ProcessGuess(Input);
+        ProcessGuess(PlayerInput);
     }
 }
 
@@ -64,7 +64,7 @@ void UBullCowCartridge::SetupGame()
 {
     PrintLine(TEXT("Welcome to Bull-Cow Game!"));
    
-    HiddenWord = TEXT("pages");
+    HiddenWord = GetValidWords(Words)[FMath::RandRange(0, GetValidWords(Words).Num() - 1)];
     bGameOver = false;
     Lives = HiddenWord.Len();
 
@@ -78,7 +78,9 @@ void UBullCowCartridge::SetupGame()
     //HW;
     //PrintLine(TEXT("Character 1 of the hidden word is: %c"), HiddenWord[0]);
     //PrintLine(TEXT("The 4th character of HW is: %c"), HW[3]); // Should print 'e'.
-
+    // I've forgot why we have to use the *HiddenWord...
+    PrintLine(TEXT("The HiddenWord is: %s.\nIt is %i characters long"), *HiddenWord, HiddenWord.Len()); // Debug line.
+    
     IsIsogram(HiddenWord);
 }
 
@@ -89,7 +91,7 @@ void UBullCowCartridge::EndGame()
     PrintLine(TEXT("\nPress enter to play again."));
 }
 
-void UBullCowCartridge::ProcessGuess(FString Guess)
+void UBullCowCartridge::ProcessGuess(const FString& Guess)
 {
     if (Guess == HiddenWord)
     {
@@ -131,7 +133,7 @@ void UBullCowCartridge::ProcessGuess(FString Guess)
     PrintLine(TEXT("Guess again, you have %i lives left"), Lives);
 }
 
-bool UBullCowCartridge::IsIsogram(FString Word) const
+bool UBullCowCartridge::IsIsogram(const FString& Word) const
 {
     for (int32 Index = 0; Index < Word.Len(); Index++)
     {
