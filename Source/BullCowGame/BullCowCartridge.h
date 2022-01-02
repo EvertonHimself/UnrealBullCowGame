@@ -18,7 +18,10 @@ class BULLCOWGAME_API UBullCowCartridge : public UCartridge
 	void EndGame();
 	void ProcessGuess(const FString& Guess);
 	bool IsIsogram(const FString& Word) const;
+	//static bool IsIsogram(const FString& Word);
 	TArray<FString> GetValidWords(const TArray <FString>& WordList) const;
+	// if the reference (&) is not declared, then the parameter is an out parameter.
+	void GetBullCows(const FString& Guess, int32& BullCount, int32& CowCount) const;
 
 	// Your declarations go below!
 	private:
@@ -26,4 +29,5 @@ class BULLCOWGAME_API UBullCowCartridge : public UCartridge
 	int32 Lives;
 	bool bGameOver;
 	TArray<FString> Words;
+	TArray<FString> Isograms;
 };
